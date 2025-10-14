@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: gift-money-service
+    env: java
+    buildCommand: ./mvnw clean package -DskipTests
+    startCommand: java -jar target/gift-money-0.0.1-SNAPSHOT.jar
+    envVars:
+      - key: DB_PASSWORD
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod

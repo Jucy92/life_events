@@ -1,0 +1,125 @@
+{
+  "cookies": [
+    {
+      "name": "AEC",
+      "value": "AaJma5slOyu89e6VJQ_hAPYLCjGHN6BvXQcB8_p_Nz722J0VuoFDgs3u_aU",
+      "domain": ".google.com",
+      "path": "/",
+      "expires": 1775795365.233034,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "NID",
+      "value": "525=kxpOFi2qmjk1JqXL2OS-1l-_3O61Pe27OVHi7HFyexJM4Jdj97Mdah08lzKErvDwssjx0nVonUGu0Z4n_8TvYds6PFvfS90_eYvS5XqOkP1e6p36A4eY7XocJrjbCCHhCUzSG8l7JmTOP-ABKns4HmR76FmOttHKCve9PEJx1EJ9fIR2wIeq7WoDXproIxkbLnWPIhZeKtOno8hlyAMR922QrTBI4C-yyvw9F9YLk281OK_M0YpQcym77g",
+      "domain": ".google.com",
+      "path": "/",
+      "expires": 1776054565.569717,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "DV",
+      "value": "IxV_yQUWcz8RMMNiN6YW-gYUgORqnRk",
+      "domain": "www.google.com",
+      "path": "/",
+      "expires": 1760243970,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "YSC",
+      "value": "Cm0WW7EZX4o",
+      "domain": ".youtube.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None",
+      "partitionKey": "https://google.com",
+      "_crHasCrossSiteAncestor": true
+    },
+    {
+      "name": "VISITOR_INFO1_LIVE",
+      "value": "vWRQdNAQdc4",
+      "domain": ".youtube.com",
+      "path": "/",
+      "expires": 1775795370.763739,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None",
+      "partitionKey": "https://google.com",
+      "_crHasCrossSiteAncestor": true
+    },
+    {
+      "name": "VISITOR_PRIVACY_METADATA",
+      "value": "CgJLUhIEGgAgWA%3D%3D",
+      "domain": ".youtube.com",
+      "path": "/",
+      "expires": 1775795370.763783,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None",
+      "partitionKey": "https://google.com",
+      "_crHasCrossSiteAncestor": true
+    },
+    {
+      "name": "__Secure-YNID",
+      "value": "12.YT=fbuMt1NK-JBXhp_nb1Vs45S8EgZ8cqgNpD21UUI2pc23Yd6veH5P7UP1Gay_Sqn7hnHNSHFhv7zGglAhG0oQWtudbYXJfLf2iXuw7RrLAzS3Z3d7CmjjxHXshzN90Cjyp0IRWchu6HTbqaL6aCYBziFflR0PlOihIiNE_u5wvDr1lK-jEgnsY4A26iu6vfEQ_CZvppfuiRR0eucpeajt9Ll-5k7qSMMnIzoNh0yyhKhIKdRB-ID1APlrtCkAIm3vSVH035qDUYpOhANV4t5qnIywAZ69VjzyyAFVpcic8Sinbu4w1Jj2C7WwRhJRmM36D333yn5lSQwsMSBW84g1kg",
+      "domain": ".youtube.com",
+      "path": "/",
+      "expires": 1775795370.763589,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None",
+      "partitionKey": "https://google.com",
+      "_crHasCrossSiteAncestor": true
+    },
+    {
+      "name": "__Secure-ROLLOUT_TOKEN",
+      "value": "CJmf_Iis6tzqwAEQt4DOxumdkAMY0dLXxumdkAM%3D",
+      "domain": ".youtube.com",
+      "path": "/",
+      "expires": 1775795370.763678,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None",
+      "partitionKey": "https://google.com",
+      "_crHasCrossSiteAncestor": true
+    }
+  ],
+  "origins": [
+    {
+      "origin": "https://www.google.com",
+      "localStorage": [
+        {
+          "name": "sb_wiz.zpc.gws-wiz-serp.",
+          "value": "{\"0\":[],\"1\":{\"av\":\"949225048214683147\",\"q\":\"yMgjTDR1ybruNsyexHPqgazyw0U\"}}"
+        },
+        {
+          "name": "sb_wiz.pq_tm_hp",
+          "value": "1760243370263"
+        },
+        {
+          "name": "sb_wiz.pq",
+          "value": "SuperClaude Framework installation windows"
+        },
+        {
+          "name": "sb_wiz.sr_di",
+          "value": "GPufyeimounnDBjv4dqf6ZWR04kBGMibtZn1y8Op0QEYqsKluo2o8-YUGJ3Fy46UvK_lfg"
+        },
+        {
+          "name": "sb_wiz.qc",
+          "value": "1"
+        },
+        {
+          "name": "sb_wiz.sc_pq",
+          "value": ""
+        }
+      ]
+    }
+  ]
+}

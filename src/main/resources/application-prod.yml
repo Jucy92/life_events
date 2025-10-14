@@ -1,0 +1,64 @@
+# 🔒 프로덕션 환경 설정
+# 사용 방법: java -jar app.jar --spring.profiles.active=prod
+
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10  # 프로덕션 환경: 더 많은 커넥션 풀
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      data-source-properties:
+        prepareThreshold: 0
+
+  jpa:
+    hibernate:
+      ddl-auto: validate  # 🔒 프로덕션: validate 사용 (자동 DDL 비활성화)
+    show-sql: false  # 🔒 프로덕션: SQL 로깅 비활성화
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: false
+
+  h2:
+    console:
+      enabled: false  # 🔒 프로덕션: H2 Console 비활성화
+
+# 🔒 프로덕션 로깅: 개인정보 노출 방지
+logging:
+  level:
+    root: INFO
+    com.example.giftmoney: INFO
+    org.hibernate.SQL: WARN
+    org.hibernate.type.descriptor.sql.BasicBinder: WARN
+    org.springframework.web: INFO
+    org.springframework.security: INFO
+
+  # 로그 파일 설정
+  file:
+    name: logs/gift-money-app.log
+    max-size: 10MB
+    max-history: 30
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+# JWT Configuration (환경변수에서 주입)
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION:86400000}
+
+# CORS Configuration (환경변수에서 주입)
+cors:
+  allowed-origins: ${CORS_ALLOWED_ORIGINS}
+
+# Server
+server:
+  port: ${PORT:8080}
+  error:
+    include-stacktrace: never  # 🔒 프로덕션: 스택트레이스 노출 금지

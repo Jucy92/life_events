@@ -1,0 +1,66 @@
+spring:
+  application:
+    name: gift-money-service
+
+  # H2 Database (로컬 개발용) - 주석 처리
+  # datasource:
+  #   url: jdbc:h2:mem:testdb
+  #   driver-class-name: org.h2.Driver
+  #   username: sa
+  #   password:
+
+  # PostgreSQL (운영용 - Supabase Transaction Pooler)
+  # 🔒 보안: 환경변수로 자격증명 관리 (하드코딩 금지)
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/gift_money_db}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:changeme}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 2
+      minimum-idle: 1
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      # PostgreSQL Prepared Statement 캐싱 비활성화 (S_1 충돌 에러 방지)
+      data-source-properties:
+        prepareThreshold: 0
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  # H2 Console 비활성화
+  # h2:
+  #   console:
+  #     enabled: true
+  #     path: /h2-console
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+# JWT Configuration
+# 🔒 보안: JWT 시크릿은 반드시 환경변수로 설정 (최소 256비트 이상 랜덤 문자열)
+# 생성 방법: openssl rand -base64 64
+jwt:
+  secret: ${JWT_SECRET:your-secret-key-min-256-bits-please-change-this-in-production}
+  expiration: ${JWT_EXPIRATION:86400000}  # 24시간 (밀리초)
+
+# Logging (개발 환경용)
+# ⚠️ 프로덕션에서는 application-prod.yml 사용 (--spring.profiles.active=prod)
+logging:
+  level:
+    com.example.giftmoney: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE  # ⚠️ 개발용: 실제 값 노출됨
+
+# Server
+server:
+  port: ${PORT:8080}

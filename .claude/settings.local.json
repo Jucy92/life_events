@@ -1,0 +1,39 @@
+{
+  "permissions": {
+    "allow": [
+	  "Bash"
+      "Read(//c/Users/user/.claude/**)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "mcp__g-search-mcp__search",
+      "WebFetch(domain:pypi.org)",
+      "WebFetch(domain:goddaehee.tistory.com)",
+      "mcp__playwright-mcp__browser_navigate",
+      "mcp__playwright-mcp__browser_navigate_back",
+      "mcp__playwright-mcp__browser_take_screenshot",
+      "mcp__playwright-mcp__browser_snapshot",
+      "mcp__playwright-mcp__browser_click",
+      "mcp__playwright-mcp__browser_type",
+      "mcp__playwright-mcp__browser_evaluate",
+      "mcp__playwright-mcp__browser_hover",
+      "mcp__playwright-mcp__browser_drag",
+      "mcp__playwright-mcp__browser_select_option",
+      "mcp__playwright-mcp__browser_fill_form",
+      "mcp__playwright-mcp__browser_press_key",
+      "mcp__playwright-mcp__browser_file_upload",
+      "mcp__playwright-mcp__browser_handle_dialog",
+      "mcp__playwright-mcp__browser_console_messages",
+      "mcp__playwright-mcp__browser_network_requests",
+      "mcp__playwright-mcp__browser_wait_for",
+      "mcp__playwright-mcp__browser_tabs",
+      "mcp__playwright-mcp__browser_resize",
+      "mcp__playwright-mcp__browser_close",
+      "mcp__playwright-mcp__browser_install",
+      "WebFetch(domain:developers.kakaomobility.com)",
+      "WebFetch(domain:glama.ai)",
+      "WebFetch(domain:developer.tomtom.com)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
