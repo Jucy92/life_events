@@ -34,6 +34,11 @@ public class TemplateController {
     public ResponseEntity<String> downloadTemplate() {
         // CSV 헤더 (컬럼명)
         StringBuilder csv = new StringBuilder();
+
+        // UTF-8 BOM 추가 (Excel에서 한글 깨짐 방지)
+        // BOM: Byte Order Mark - Excel이 UTF-8 인코딩을 인식하도록 함
+        csv.append("\uFEFF");
+
         csv.append("event_date,event_type,giver_name,giver_relation,amount,contact,memo\n");
 
         // 예시 데이터 (현재 날짜 기준으로 동적 생성)
