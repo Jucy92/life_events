@@ -43,10 +43,9 @@ build/
 *.sql~
 *.sqlite
 
-### md files except README and DEPLOYMENT_GUIDE ###
+### md files except README ###
 *.md
 !README.md
-!DEPLOYMENT_GUIDE.md
 
 ### Logs ###
 *.log
