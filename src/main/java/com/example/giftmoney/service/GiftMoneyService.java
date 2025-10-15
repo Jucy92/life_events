@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -96,14 +97,17 @@ public class GiftMoneyService {
         giftMoneyRepository.delete(entity);
     }
 
-    // 받은/보낸 축의금 통계 조회
+    // 받은/보낸 경조금 통계 조회
     // ⚡ 성능: 단일 쿼리로 최적화 (기존 6개 쿼리 → 1개 쿼리)
     public GiftMoneyStatisticsResponse getStatistics(Long userId) {
-        Object[] result = giftMoneyRepository.getStatisticsRaw(userId);
+        List<Object[]> results = giftMoneyRepository.getStatisticsRaw(userId);
 
-        if (result == null || result.length == 0) {
+        if (results == null || results.isEmpty()) {
             return new GiftMoneyStatisticsResponse();
         }
+
+        // Native query는 List<Object[]>로 반환됨 - 첫 번째 행을 가져옴
+        Object[] result = results.get(0);
 
         GiftMoneyStatisticsResponse stats = new GiftMoneyStatisticsResponse();
 

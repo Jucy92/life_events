@@ -64,6 +64,6 @@ public interface GiftMoneyRepository extends JpaRepository<GiftMoney, Long> {
            "COALESCE(AVG(amount), 0.0) as avgAmount " +
            "FROM gift_money WHERE user_id = :userId",
            nativeQuery = true)
-    Object[] getStatisticsRaw(@Param("userId") Long userId);
+    List<Object[]> getStatisticsRaw(@Param("userId") Long userId);
 
 }
