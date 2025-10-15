@@ -39,7 +39,7 @@ public class SecurityConfig {
                         .ignoringRequestMatchers("/api/**"))  // API는 CSRF 비활성화
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login", "/register", "/css/**", "/js/**", "/api/auth/**", "/h2-console/**", "/error").permitAll()
+                        .requestMatchers("/", "/login", "/register", "/css/**", "/js/**", "/api/auth/**", "/api/template/**", "/h2-console/**", "/error").permitAll()
                         .requestMatchers("/api/**").authenticated()  // API는 JWT 인증
                         .anyRequest().permitAll())  // 웹 페이지는 클라이언트에서 JWT로 인증 처리
                 .exceptionHandling(exceptions -> exceptions
