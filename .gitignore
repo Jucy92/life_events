@@ -58,3 +58,6 @@ Thumbs.db
 ### claude code ###
 /.claude/*
 browser-state-*.json
+
+### Render deployment config ###
+render.yaml
