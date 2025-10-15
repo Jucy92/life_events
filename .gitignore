@@ -43,8 +43,9 @@ build/
 *.sql~
 *.sqlite
 
-### md ###
+### md files except README ###
 *.md
+!README.md
 
 ### Logs ###
 *.log
@@ -56,3 +57,4 @@ Thumbs.db
 
 ### claude code ###
 /.claude/*
+browser-state-*.json
