@@ -26,4 +26,9 @@ public class WebController {
         return "dashboard";
     }
 
+    @GetMapping("/statistics")
+    public String statistics() {
+        return "statistics";
+    }
+
 }
