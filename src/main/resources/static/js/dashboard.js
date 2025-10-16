@@ -11,6 +11,51 @@ let currentTransactionType = 'RECEIVED'; // 기본값: 받은 경조금
 let isRedirecting = false;
 let isInitializing = false;
 
+// Toast 메시지 시스템
+function showToast(message, type = 'info') {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+
+    const icons = {
+        success: '✓',
+        error: '✕',
+        warning: '⚠',
+        info: 'ℹ'
+    };
+
+    toast.innerHTML = `
+        <div class="toast-icon">${icons[type] || icons.info}</div>
+        <div class="toast-message">${message}</div>
+    `;
+
+    container.appendChild(toast);
+
+    // 3초 후 자동 제거
+    setTimeout(() => {
+        toast.style.animation = 'slideOut 0.3s ease-out';
+        setTimeout(() => {
+            container.removeChild(toast);
+        }, 300);
+    }, 3000);
+}
+
+// slideOut 애니메이션 추가 (CSS에 없으므로 동적으로 추가)
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideOut {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(style);
+
 // Initialize dashboard
 document.addEventListener('DOMContentLoaded', function() {
     // Check authentication
@@ -61,6 +106,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Setup amount input formatting (천 단위 콤마)
     setupAmountFormatting();
+
+    // Setup date validation (미래 날짜 경고)
+    setupDateValidation();
+
+    // Setup form validation
+    setupFormValidation();
 });
 
 // Initialize dashboard with safe concurrent API calls
@@ -144,6 +195,257 @@ function setupAmountFormatting() {
             document.getElementById('amountValue').value = value;
         }
     });
+}
+
+// Setup custom date input (yyyy.mm.dd 형식)
+function setupDateValidation() {
+    const eventDateInput = document.getElementById('eventDate');
+    let dateValue = { year: '', month: '', day: '' };
+
+    // 날짜 입력 처리
+    eventDateInput.addEventListener('input', function(e) {
+        let value = this.value.replace(/[^\d]/g, ''); // 숫자만 추출
+
+        if (value.length === 0) {
+            dateValue = { year: '', month: '', day: '' };
+            this.value = '';
+            document.getElementById('eventDateValue').value = '';
+            document.getElementById('eventDateWarning').style.display = 'none';
+            return;
+        }
+
+        // 앞자리부터 채우기 (1992 입력 시: 1 -> 19 -> 199 -> 1992)
+        if (value.length <= 4) {
+            dateValue.year = value.padEnd(4, '_').substring(0, 4);
+            dateValue.month = '';
+            dateValue.day = '';
+        } else if (value.length <= 6) {
+            dateValue.year = value.substring(0, 4);
+            dateValue.month = value.substring(4, 6).padEnd(2, '_').substring(0, 2);
+            dateValue.day = '';
+        } else {
+            dateValue.year = value.substring(0, 4);
+            dateValue.month = value.substring(4, 6);
+            dateValue.day = value.substring(6, 8);
+        }
+
+        // 포맷팅된 값 표시
+        let formatted = dateValue.year;
+        if (dateValue.month) {
+            formatted += '.' + dateValue.month;
+        }
+        if (dateValue.day) {
+            formatted += '.' + dateValue.day;
+        }
+
+        this.value = formatted;
+
+        // 완전한 날짜인 경우 검증
+        if (value.length === 8) {
+            const year = dateValue.year;
+            const month = dateValue.month;
+            const day = dateValue.day;
+
+            // YYYY-MM-DD 형식으로 변환 (백엔드 전송용)
+            const isoDate = `${year}-${month}-${day}`;
+            document.getElementById('eventDateValue').value = isoDate;
+
+            // 미래 날짜 경고 (저장은 가능)
+            try {
+                const inputDate = new Date(isoDate);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                const warningElement = document.getElementById('eventDateWarning');
+                if (inputDate > today) {
+                    warningElement.style.display = 'block';
+                } else {
+                    warningElement.style.display = 'none';
+                }
+            } catch (e) {
+                document.getElementById('eventDateWarning').style.display = 'none';
+            }
+        }
+    });
+
+    // 백스페이스 처리 (일 -> 월 -> 년 순서로 지우기)
+    eventDateInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Backspace') {
+            e.preventDefault();
+
+            let value = this.value.replace(/[^\d]/g, '');
+
+            if (value.length > 0) {
+                // 마지막 숫자 하나 제거
+                value = value.substring(0, value.length - 1);
+
+                // input 이벤트 트리거하여 다시 포맷팅
+                this.value = value;
+                const inputEvent = new Event('input', { bubbles: true });
+                this.dispatchEvent(inputEvent);
+            }
+        } else if (e.key === 'Delete') {
+            e.preventDefault();
+            this.value = '';
+            dateValue = { year: '', month: '', day: '' };
+            document.getElementById('eventDateValue').value = '';
+            document.getElementById('eventDateWarning').style.display = 'none';
+        } else if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
+            // Ctrl+A 처리는 기본 동작 허용
+            return;
+        } else if (!e.ctrlKey && !e.metaKey && !/^\d$/.test(e.key) &&
+                   !['ArrowLeft', 'ArrowRight', 'Home', 'End', 'Tab'].includes(e.key)) {
+            // 숫자와 허용된 키만 입력 가능
+            e.preventDefault();
+        }
+    });
+
+    // 붙여넣기 처리
+    eventDateInput.addEventListener('paste', function(e) {
+        e.preventDefault();
+        const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+        const numbers = pastedText.replace(/[^\d]/g, '');
+
+        if (numbers.length > 0) {
+            this.value = numbers.substring(0, 8); // 최대 8자리
+            const inputEvent = new Event('input', { bubbles: true });
+            this.dispatchEvent(inputEvent);
+        }
+    });
+
+    // 날짜 유효성 검사 (월: 1-12, 일: 1-31)
+    function validateDate(year, month, day) {
+        const monthNum = parseInt(month, 10);
+        const dayNum = parseInt(day, 10);
+        const yearNum = parseInt(year, 10);
+
+        // 월 검사
+        if (monthNum < 1 || monthNum > 12) {
+            return { valid: false, message: '월은 1~12 사이여야 합니다.' };
+        }
+
+        // 일 검사 (간단한 검증: 1-31)
+        if (dayNum < 1 || dayNum > 31) {
+            return { valid: false, message: '일은 1~31 사이여야 합니다.' };
+        }
+
+        // 월별 최대 일수 검증
+        const daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+        // 윤년 계산
+        const isLeapYear = (yearNum % 4 === 0 && yearNum % 100 !== 0) || (yearNum % 400 === 0);
+        if (isLeapYear) {
+            daysInMonth[1] = 29;
+        }
+
+        if (dayNum > daysInMonth[monthNum - 1]) {
+            return { valid: false, message: `${monthNum}월은 최대 ${daysInMonth[monthNum - 1]}일까지입니다.` };
+        }
+
+        return { valid: true };
+    }
+
+    // 완전한 날짜 입력 시 유효성 검사
+    eventDateInput.addEventListener('blur', function() {
+        const value = this.value.replace(/[^\d]/g, '');
+
+        if (value.length === 8) {
+            const year = value.substring(0, 4);
+            const month = value.substring(4, 6);
+            const day = value.substring(6, 8);
+
+            const validation = validateDate(year, month, day);
+
+            if (!validation.valid) {
+                showToast(validation.message, 'error');
+                this.value = '';
+                document.getElementById('eventDateValue').value = '';
+                document.getElementById('eventDateWarning').style.display = 'none';
+            }
+        }
+    });
+
+    // 달력 버튼 클릭 시 달력 표시
+    const calendarBtn = document.getElementById('calendarBtn');
+    const calendarPicker = document.getElementById('calendarPicker');
+
+    if (calendarBtn && calendarPicker) {
+        calendarBtn.addEventListener('click', function() {
+            calendarPicker.showPicker();
+        });
+
+        // 달력에서 날짜 선택 시 텍스트 입력으로 동기화
+        calendarPicker.addEventListener('change', function() {
+            if (this.value) {
+                const [year, month, day] = this.value.split('-');
+                const formattedDate = `${year}.${month}.${day}`;
+
+                eventDateInput.value = formattedDate;
+                document.getElementById('eventDateValue').value = this.value;
+
+                // 미래 날짜 경고 확인
+                const inputDate = new Date(this.value);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                const warningElement = document.getElementById('eventDateWarning');
+                if (inputDate > today) {
+                    warningElement.style.display = 'block';
+                } else {
+                    warningElement.style.display = 'none';
+                }
+            }
+        });
+    }
+}
+
+// Setup form validation
+function setupFormValidation() {
+    const form = document.getElementById('giftMoneyForm');
+    const requiredFields = ['eventDate', 'eventType', 'transactionType', 'giverName', 'amount'];
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+    });
+
+    // 필수 항목 검증 함수
+    window.validateRequiredFields = function() {
+        let isValid = true;
+        let firstInvalidField = null;
+
+        requiredFields.forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            const value = field.value.trim();
+
+            if (!value || value === '') {
+                isValid = false;
+                field.classList.add('is-invalid');
+                field.style.borderColor = '#dc3545';
+
+                if (!firstInvalidField) {
+                    firstInvalidField = field;
+                }
+
+                // 이벤트 리스너 추가 (값 입력 시 빨간 테두리 제거)
+                field.addEventListener('input', function() {
+                    this.classList.remove('is-invalid');
+                    this.style.borderColor = '';
+                }, { once: true });
+            } else {
+                field.classList.remove('is-invalid');
+                field.style.borderColor = '';
+            }
+        });
+
+        if (!isValid) {
+            if (firstInvalidField) {
+                firstInvalidField.focus();
+            }
+            showToast('필수 항목을 모두 입력해주세요.', 'warning');
+        }
+
+        return isValid;
+    };
 }
 
 // 오늘 날짜를 YYYY-MM-DD 형식으로 반환
@@ -291,7 +593,7 @@ function displayGiftMoneyList(items) {
     }).join('');
 }
 
-// Display pagination
+// Display pagination (최대 5개 페이지 버튼 표시)
 function displayPagination(pageData) {
     const pagination = document.getElementById('pagination');
     const totalPages = pageData.totalPages;
@@ -308,13 +610,39 @@ function displayPagination(pageData) {
         html += `<li class="page-item"><a class="page-link" href="#" onclick="changePage(${currentPage - 1}); return false;">이전</a></li>`;
     }
 
+    // Calculate page range (최대 5개 버튼)
+    const maxButtons = 5;
+    let startPage = Math.max(0, currentPage - Math.floor(maxButtons / 2));
+    let endPage = Math.min(totalPages - 1, startPage + maxButtons - 1);
+
+    // Adjust start if we're near the end
+    if (endPage - startPage < maxButtons - 1) {
+        startPage = Math.max(0, endPage - maxButtons + 1);
+    }
+
+    // First page button (if not in range)
+    if (startPage > 0) {
+        html += `<li class="page-item"><a class="page-link" href="#" onclick="changePage(0); return false;">1</a></li>`;
+        if (startPage > 1) {
+            html += `<li class="page-item disabled"><a class="page-link" href="#">...</a></li>`;
+        }
+    }
+
     // Page numbers
-    for (let i = 0; i < totalPages; i++) {
+    for (let i = startPage; i <= endPage; i++) {
         if (i === currentPage) {
             html += `<li class="page-item active"><a class="page-link" href="#">${i + 1}</a></li>`;
         } else {
             html += `<li class="page-item"><a class="page-link" href="#" onclick="changePage(${i}); return false;">${i + 1}</a></li>`;
         }
+    }
+
+    // Last page button (if not in range)
+    if (endPage < totalPages - 1) {
+        if (endPage < totalPages - 2) {
+            html += `<li class="page-item disabled"><a class="page-link" href="#">...</a></li>`;
+        }
+        html += `<li class="page-item"><a class="page-link" href="#" onclick="changePage(${totalPages - 1}); return false;">${totalPages}</a></li>`;
     }
 
     // Next button
@@ -382,8 +710,17 @@ function showAddModal() {
     document.getElementById('giftMoneyForm').reset();
     document.getElementById('giftMoneyId').value = '';
 
-    // 오늘 날짜로 기본값 설정
-    document.getElementById('eventDate').value = getTodayDate();
+    // 오늘 날짜로 기본값 설정 (yyyy.mm.dd 형식)
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    const formattedDate = `${year}.${month}.${day}`;
+    const isoDate = `${year}-${month}-${day}`;
+
+    document.getElementById('eventDate').value = formattedDate;
+    document.getElementById('eventDateValue').value = isoDate;
+    document.getElementById('eventDateWarning').style.display = 'none';
 
     // 현재 탭에 맞는 거래 유형 기본값 설정
     document.getElementById('transactionType').value = currentTransactionType || 'RECEIVED';
@@ -407,7 +744,29 @@ async function editGiftMoney(id) {
 
         document.getElementById('modalTitle').textContent = '경조금 수정';
         document.getElementById('giftMoneyId').value = item.id;
-        document.getElementById('eventDate').value = item.eventDate;
+
+        // 날짜 형식 변환 (YYYY-MM-DD -> yyyy.mm.dd)
+        const dateParts = item.eventDate.split('-');
+        const formattedDate = dateParts.join('.');
+        document.getElementById('eventDate').value = formattedDate;
+        document.getElementById('eventDateValue').value = item.eventDate;
+
+        // 미래 날짜 경고 확인
+        try {
+            const inputDate = new Date(item.eventDate);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const warningElement = document.getElementById('eventDateWarning');
+            if (inputDate > today) {
+                warningElement.style.display = 'block';
+            } else {
+                warningElement.style.display = 'none';
+            }
+        } catch (e) {
+            document.getElementById('eventDateWarning').style.display = 'none';
+        }
+
         document.getElementById('eventType').value = item.eventType;
         document.getElementById('transactionType').value = item.transactionType;
         document.getElementById('giverName').value = item.giverName;
@@ -431,16 +790,27 @@ async function editGiftMoney(id) {
 
 // Save gift money
 async function saveGiftMoney() {
+    // 필수 항목 검증
+    if (!validateRequiredFields()) {
+        return;
+    }
+
     const id = document.getElementById('giftMoneyId').value;
 
     // 금액은 hidden input에서 가져오기 (콤마 제거된 실제 값)
     const amountValue = document.getElementById('amountValue').value ||
                         document.getElementById('amount').value.replace(/[^\d]/g, '');
 
+    // 날짜는 hidden input에서 가져오기 (YYYY-MM-DD 형식)
+    const eventDateValue = document.getElementById('eventDateValue').value ||
+                           document.getElementById('eventDate').value.replace(/\./g, '-');
+
+    const transactionType = document.getElementById('transactionType').value;
+
     const data = {
-        eventDate: document.getElementById('eventDate').value,
+        eventDate: eventDateValue,
         eventType: document.getElementById('eventType').value,
-        transactionType: document.getElementById('transactionType').value,
+        transactionType: transactionType,
         giverName: document.getElementById('giverName').value,
         giverRelation: document.getElementById('giverRelation').value,
         amount: parseInt(amountValue),
@@ -462,10 +832,25 @@ async function saveGiftMoney() {
             throw response;
         }
 
-        alert(id ? '수정되었습니다.' : '추가되었습니다.');
+        showToast(id ? '수정되었습니다.' : '추가되었습니다.', 'success');
 
         const modal = bootstrap.Modal.getInstance(document.getElementById('giftMoneyModal'));
         modal.hide();
+
+        // 추가/수정한 거래 유형에 맞는 탭으로 자동 이동
+        if (!id) { // 새로 추가한 경우에만 탭 이동
+            currentTransactionType = transactionType;
+
+            // 해당 탭 활성화
+            const tabId = transactionType === 'RECEIVED' ? 'received-tab' :
+                          transactionType === 'SENT' ? 'sent-tab' : 'all-tab';
+            const tabButton = document.getElementById(tabId);
+
+            if (tabButton) {
+                const tab = new bootstrap.Tab(tabButton);
+                tab.show();
+            }
+        }
 
         // 데이터 다시 로드
         await loadGiftMoney();
@@ -492,7 +877,7 @@ async function deleteGiftMoney(id) {
             throw response;
         }
 
-        alert('삭제되었습니다.');
+        showToast('삭제되었습니다.', 'success');
 
         // 데이터 다시 로드
         await loadGiftMoney();
@@ -516,12 +901,24 @@ async function uploadFile() {
     const file = fileInput.files[0];
 
     if (!file) {
-        alert('파일을 선택해주세요.');
+        showToast('파일을 선택해주세요.', 'warning');
+        return;
+    }
+
+    // 파일 크기 제한 (5MB)
+    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+    if (file.size > maxSize) {
+        showToast('파일 크기는 5MB 이하여야 합니다.', 'error');
         return;
     }
 
     const formData = new FormData();
     formData.append('file', file);
+
+    const uploadButton = document.querySelector('#uploadModal button.btn-primary');
+    const originalText = uploadButton.textContent;
+    uploadButton.disabled = true;
+    uploadButton.textContent = '업로드 중...';
 
     try {
         const response = await fetch(`${API_BASE}/gift-money/upload`, {
@@ -537,7 +934,7 @@ async function uploadFile() {
         }
 
         const result = await response.json();
-        alert(`업로드 완료!\n성공: ${result.successCount}건\n실패: ${result.failCount}건`);
+        showToast(`업로드 완료! 성공: ${result.successCount}건`, 'success');
 
         const modal = bootstrap.Modal.getInstance(document.getElementById('uploadModal'));
         modal.hide();
@@ -548,6 +945,9 @@ async function uploadFile() {
 
     } catch (error) {
         await handleError(error, '업로드에 실패했습니다.');
+    } finally {
+        uploadButton.disabled = false;
+        uploadButton.textContent = originalText;
     }
 }
 

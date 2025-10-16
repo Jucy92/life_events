@@ -12,7 +12,6 @@ import java.time.LocalDate;
 public class GiftMoneyRequest {
 
     @NotNull(message = "행사 날짜는 필수입니다")
-    @PastOrPresent(message = "행사 날짜는 과거 또는 현재여야 합니다")
     private LocalDate eventDate;
 
     @NotBlank(message = "행사 유형은 필수입니다")

@@ -57,9 +57,83 @@
             padding: 5px 10px;
             border-radius: 5px;
         }
+        /* 메모 영역 스타일 개선 */
+        .table td {
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .table td:nth-child(8) { /* 메모 칸 */
+            max-width: 250px;
+            min-width: 150px;
+            overflow-y: auto;
+            white-space: normal;
+            word-wrap: break-word;
+            max-height: 80px; /* 3줄*/
+            display: block;
+        }
+        /* 커스텀 날짜 입력 스타일 */
+        .custom-date-input {
+            font-family: 'Courier New', monospace;
+            letter-spacing: 0.1em;
+        }
+        .date-input-group {
+            display: flex;
+            gap: 8px;
+        }
+        .date-input-group input[type="text"] {
+            flex: 1;
+        }
+        .date-input-group button {
+            width: 40px;
+            padding: 0;
+        }
+        /* Toast 메시지 스타일 */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+        .toast {
+            min-width: 250px;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            animation: slideIn 0.3s ease-out;
+        }
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        .toast.success { border-left: 4px solid #28a745; }
+        .toast.error { border-left: 4px solid #dc3545; }
+        .toast.warning { border-left: 4px solid #ffc107; }
+        .toast.info { border-left: 4px solid #17a2b8; }
+        .toast-icon {
+            font-size: 24px;
+            margin-right: 12px;
+        }
+        .toast-message {
+            flex: 1;
+        }
     </style>
 </head>
 <body>
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
     <!-- Navbar -->
     <nav class="navbar navbar-dark">
         <div class="container-fluid">
@@ -208,11 +282,23 @@
                     <form id="giftMoneyForm">
                         <input type="hidden" id="giftMoneyId">
                         <div class="mb-3">
-                            <label for="eventDate" class="form-label">행사 날짜</label>
-                            <input type="date" class="form-control" id="eventDate" required>
+                            <label for="eventDate" class="form-label">행사 날짜 <span class="text-danger">(*필수)</span></label>
+                            <div class="date-input-group">
+                                <input type="text" class="form-control custom-date-input" id="eventDate"
+                                       placeholder="yyyy.mm.dd" maxlength="10" required>
+                                <button type="button" class="btn btn-outline-secondary" id="calendarBtn"
+                                        title="달력 열기">
+                                    <i class="fas fa-calendar-alt"></i>
+                                </button>
+                            </div>
+                            <input type="hidden" id="eventDateValue">
+                            <input type="date" id="calendarPicker" style="position: absolute; opacity: 0; pointer-events: none;">
+                            <div class="text-danger small mt-1" id="eventDateWarning" style="display: none;">
+                                ⚠️ 미래의 날짜를 선택했습니다
+                            </div>
                         </div>
                         <div class="mb-3">
-                            <label for="eventType" class="form-label">행사 유형</label>
+                            <label for="eventType" class="form-label">행사 유형 <span class="text-danger">(*필수)</span></label>
                             <select class="form-select" id="eventType" required>
                                 <option value="">선택하세요</option>
                                 <option value="결혼식">결혼식</option>
@@ -223,14 +309,14 @@
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label for="transactionType" class="form-label">거래 유형</label>
+                            <label for="transactionType" class="form-label">거래 유형 <span class="text-danger">(*필수)</span></label>
                             <select class="form-select" id="transactionType" required>
                                 <option value="RECEIVED">받은 경조금</option>
                                 <option value="SENT">보낸 경조금</option>
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label for="giverName" class="form-label">보낸 사람</label>
+                            <label for="giverName" class="form-label">보낸 사람 <span class="text-danger">(*필수)</span></label>
                             <input type="text" class="form-control" id="giverName" required>
                         </div>
                         <div class="mb-3">
@@ -239,7 +325,7 @@
                                    placeholder="예: 친구, 가족, 직장동료">
                         </div>
                         <div class="mb-3">
-                            <label for="amount" class="form-label">금액</label>
+                            <label for="amount" class="form-label">금액 <span class="text-danger">(*필수)</span></label>
                             <input type="text" class="form-control" id="amount" required placeholder="예: 100,000">
                             <input type="hidden" id="amountValue">
                         </div>

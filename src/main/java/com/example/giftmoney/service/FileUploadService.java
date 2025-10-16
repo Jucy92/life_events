@@ -43,6 +43,7 @@ public class FileUploadService {
             int lastRowNum = sheet.getLastRowNum();
 
             // 첫 번째 행은 헤더이므로 스킵
+            // 먼저 모든 행을 검증하고 파싱
             for (int i = 1; i <= lastRowNum; i++) {
                 Row row = sheet.getRow(i);
                 if (row == null) {
@@ -61,12 +62,30 @@ public class FileUploadService {
                 }
             }
 
+            // 실패가 하나라도 있으면 전체 롤백 (트랜잭션 예외 발생)
+            if (!errors.isEmpty()) {
+                StringBuilder errorMessage = new StringBuilder("Excel 업로드 실패\n\n");
+                errorMessage.append("총 ").append(errors.size()).append("건의 오류가 발생했습니다.\n\n");
+                errorMessage.append("오류 내역:\n");
+
+                for (ErrorDetail error : errors) {
+                    errorMessage.append("- ").append(error.getRow()).append("행: ")
+                               .append(error.getReason()).append("\n");
+                }
+
+                errorMessage.append("\n양식에 맞춰 수정 후 다시 업로드해주세요.\n");
+                errorMessage.append("템플릿 다운로드: 대시보드 > Excel 업로드 > 템플릿 다운로드");
+
+                throw new IllegalArgumentException(errorMessage.toString());
+            }
+
+            // 모든 데이터가 유효한 경우에만 저장
             giftMoneyRepository.saveAll(entities);
 
             return FileUploadResponse.builder()
                     .successCount(entities.size())
-                    .failCount(errors.size())
-                    .errors(errors)
+                    .failCount(0)
+                    .errors(new ArrayList<>())
                     .build();
 
         } catch (IOException e) {
