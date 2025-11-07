@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인 - 경조금 관리</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            max-width: 450px;
+            width: 100%;
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo h1 {
+            color: #667eea;
+            font-weight: 700;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 12px;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <h1>💰 경조금 관리</h1>
+            <p class="text-muted">간편하게 관리하는 경조사 기록</p>
+        </div>
+
+        <div th:if="${param.error}" class="alert alert-danger">
+            아이디 또는 비밀번호가 잘못되었습니다.
+        </div>
+
+        <div th:if="${param.logout}" class="alert alert-success">
+            로그아웃되었습니다.
+        </div>
+
+        <form id="loginForm">
+            <div class="mb-3">
+                <label for="userId" class="form-label">아이디</label>
+                <input type="text" class="form-control" id="userId" name="userId"
+                       minlength="4" maxlength="50" pattern="[a-zA-Z0-9]+" required>
+                <small class="form-text text-muted">4~50자의 영문, 숫자 조합</small>
+            </div>
+
+            <div class="mb-3">
+                <label for="password" class="form-label">비밀번호</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">로그인</button>
+        </form>
+
+        <div class="text-center mt-3">
+            <p>계정이 없으신가요? <a href="/register">회원가입</a></p>
+            <p><a href="/find-username">아이디 찾기</a> | <a href="/find-password">비밀번호 찾기</a></p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const userId = document.getElementById('userId').value;
+            const password = document.getElementById('password').value;
+
+            // 아이디 형식 검증
+            const userIdPattern = /^[a-zA-Z0-9]{4,50}$/;
+            if (!userIdPattern.test(userId)) {
+                alert('아이디는 4~50자의 영문, 숫자 조합이어야 합니다.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ userId, password })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    window.location.href = '/dashboard';
+                } else {
+                    alert('로그인 실패: 아이디 또는 비밀번호를 확인하세요.');
+                }
+            } catch (error) {
+                alert('서버 오류가 발생했습니다.');
+                console.error(error);
+            }
+        });
+    </script>
+</body>
+</html>

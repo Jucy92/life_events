@@ -1,0 +1,41 @@
+# 🔒 프로덕션 환경 설정
+# 사용 방법: java -jar app.jar --spring.profiles.active=prod
+# 또는 환경변수: SPRING_PROFILES_ACTIVE=prod
+
+spring:
+  datasource:
+    # 프로덕션: 환경변수 필수 (기본값 없음)
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    hikari:
+      maximum-pool-size: ${DB_POOL_SIZE:10}
+      minimum-idle: ${DB_POOL_MIN_IDLE:5}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate  # 🔒 프로덕션: validate 사용 (자동 DDL 비활성화)
+    show-sql: false  # 🔒 프로덕션: SQL 로깅 비활성화
+    properties:
+      hibernate:
+        format_sql: false
+
+  # 🔒 프로덕션: H2 콘솔 완전 비활성화 (보안 강화 2025-11-07)
+  h2:
+    console:
+      enabled: false
+
+# 🔒 프로덕션 로깅: 개인정보 노출 방지
+logging:
+  level:
+    root: INFO
+    com.example.giftmoney: INFO
+    org.hibernate.SQL: WARN
+    org.hibernate.type.descriptor.sql.BasicBinder: WARN
+    org.springframework.web: INFO
+    org.springframework.security: INFO
+
+# Server
+server:
+  error:
+    include-stacktrace: never  # 🔒 프로덕션: 스택트레이스 노출 금지
