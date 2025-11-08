@@ -14,7 +14,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class PersonStatisticsDto {
 
-    private String giverName;
+    private String name;
     private String relation;
     private BigDecimal receivedTotal;
     private Long receivedCount;

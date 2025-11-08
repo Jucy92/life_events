@@ -34,8 +34,8 @@ public class GiftMoneyService {
         entity.setEventDate(request.getEventDate());
         entity.setEventType(request.getEventType());
         entity.setTransactionType(request.getTransactionType());
-        entity.setGiverName(request.getGiverName());
-        entity.setGiverRelation(request.getGiverRelation());
+        entity.setName(request.getName());
+        entity.setRelation(request.getRelation());
         entity.setAmount(request.getAmount());
         entity.setContact(request.getContact());
         entity.setMemo(request.getMemo());
@@ -50,14 +50,14 @@ public class GiftMoneyService {
         // transactionType과 search 조건에 따라 쿼리 선택
         if (transactionType != null && !transactionType.isBlank()) {
             if (search != null && !search.isBlank()) {
-                page = giftMoneyRepository.findByUserIdAndTransactionTypeAndGiverNameContaining(
+                page = giftMoneyRepository.findByUserIdAndTransactionTypeAndNameContaining(
                     userId, transactionType, search, pageable);
             } else {
                 page = giftMoneyRepository.findByUserIdAndTransactionType(userId, transactionType, pageable);
             }
         } else {
             if (search != null && !search.isBlank()) {
-                page = giftMoneyRepository.findByUserIdAndGiverNameContaining(userId, search, pageable);
+                page = giftMoneyRepository.findByUserIdAndNameContaining(userId, search, pageable);
             } else {
                 page = giftMoneyRepository.findByUserId(userId, pageable);
             }
@@ -80,8 +80,8 @@ public class GiftMoneyService {
         entity.setEventDate(request.getEventDate());
         entity.setEventType(request.getEventType());
         entity.setTransactionType(request.getTransactionType());
-        entity.setGiverName(request.getGiverName());
-        entity.setGiverRelation(request.getGiverRelation());
+        entity.setName(request.getName());
+        entity.setRelation(request.getRelation());
         entity.setAmount(request.getAmount());
         entity.setContact(request.getContact());
         entity.setMemo(request.getMemo());

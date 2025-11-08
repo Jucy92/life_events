@@ -38,7 +38,7 @@ public class StatisticsService {
 
         for (Object[] row : results) {
             PersonStatisticsDto dto = PersonStatisticsDto.builder()
-                    .giverName((String) row[0])
+                    .name((String) row[0])
                     .relation((String) row[1])
                     .receivedTotal((BigDecimal) row[2])
                     .receivedCount(((Number) row[3]).longValue())

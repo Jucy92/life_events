@@ -411,7 +411,7 @@ function setupDateValidation() {
 // Setup form validation
 function setupFormValidation() {
     const form = document.getElementById('giftMoneyForm');
-    const requiredFields = ['eventDate', 'eventType', 'transactionType', 'giverName', 'amount'];
+    const requiredFields = ['eventDate', 'eventType', 'transactionType', 'name', 'amount'];
 
     form.addEventListener('submit', function(e) {
         e.preventDefault();
@@ -506,8 +506,8 @@ async function handleError(response, defaultMessage) {
                     'eventDate': '행사 날짜',
                     'eventType': '행사 유형',
                     'transactionType': '거래 유형',
-                    'giverName': '보낸 사람',
-                    'giverRelation': '관계',
+                    'name': '이름',
+                    'relation': '관계',
                     'amount': '금액',
                     'contact': '연락처',
                     'memo': '메모'
@@ -585,8 +585,8 @@ function displayGiftMoneyList(items) {
             </td>
             <td>${escapeHtml(item.eventDate)}</td>
             <td>${escapeHtml(item.eventType)}</td>
-            <td>${escapeHtml(item.giverName)}</td>
-            <td>${escapeHtml(item.giverRelation || '-')}</td>
+            <td>${escapeHtml(item.name)}</td>
+            <td>${escapeHtml(item.relation || '-')}</td>
             <td><span class="badge-amount">${Number(item.amount).toLocaleString()}원</span></td>
             <td>${escapeHtml(item.contact || '-')}</td>
             <td>${escapeHtml(item.memo || '-')}</td>
@@ -779,8 +779,8 @@ async function editGiftMoney(id) {
 
         document.getElementById('eventType').value = item.eventType;
         document.getElementById('transactionType').value = item.transactionType;
-        document.getElementById('giverName').value = item.giverName;
-        document.getElementById('giverRelation').value = item.giverRelation || '';
+        document.getElementById('name').value = item.name;
+        document.getElementById('relation').value = item.relation || '';
 
         // 금액 포맷팅하여 표시
         const amountValue = String(item.amount).replace(/[^\d]/g, '');
@@ -821,8 +821,8 @@ async function saveGiftMoney() {
         eventDate: eventDateValue,
         eventType: document.getElementById('eventType').value,
         transactionType: transactionType,
-        giverName: document.getElementById('giverName').value,
-        giverRelation: document.getElementById('giverRelation').value,
+        name: document.getElementById('name').value,
+        relation: document.getElementById('relation').value,
         amount: parseInt(amountValue),
         contact: document.getElementById('contact').value,
         memo: document.getElementById('memo').value

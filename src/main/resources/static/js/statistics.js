@@ -267,7 +267,7 @@ async function loadPersonStatistics() {
                 <div class="mb-2 pb-2 ${index < top5.length - 1 ? 'border-bottom' : ''}">
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
-                            <strong>${escapeHtml(person.giverName)}</strong>
+                            <strong>${escapeHtml(person.name)}</strong>
                             <small class="text-muted">(${escapeHtml(person.relation || '미지정')})</small>
                         </div>
                         <span class="badge ${person.balance >= 0 ? 'badge-balance-positive' : 'badge-balance-negative'}">
@@ -291,7 +291,7 @@ async function loadPersonStatistics() {
             // ⚡ XSS 방어: 사용자 입력 데이터 이스케이핑 (보안 강화 2025-11-07)
             tableBody.innerHTML = displayData.map(person => `
                 <tr>
-                    <td><strong>${escapeHtml(person.giverName)}</strong></td>
+                    <td><strong>${escapeHtml(person.name)}</strong></td>
                     <td>${escapeHtml(person.relation || '미지정')}</td>
                     <td>
                         <span class="badge badge-received">${Number(person.receivedTotal).toLocaleString()}원</span>

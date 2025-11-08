@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Table(name = "gift_money", indexes = {
     @Index(name = "idx_user_id", columnList = "user_id"),
     @Index(name = "idx_event_date", columnList = "event_date"),
-    @Index(name = "idx_giver_name", columnList = "giver_name")
+    @Index(name = "idx_name", columnList = "name")
 })
 @Getter
 @Setter
@@ -40,10 +40,10 @@ public class GiftMoney {
     private String transactionType = "RECEIVED";  // RECEIVED(받은 축의금) or SENT(보낸 축의금)
 
     @Column(nullable = false, length = 100)
-    private String giverName;
+    private String name;
 
     @Column(length = 50)
-    private String giverRelation;
+    private String relation;
 
     @Column(nullable = false, precision = 10, scale = 0)
     private BigDecimal amount;

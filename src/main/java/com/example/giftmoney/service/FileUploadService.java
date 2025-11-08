@@ -113,17 +113,17 @@ public class FileUploadService {
         }
         entity.setEventType(getCellValueAsString(eventTypeCell));
 
-        // 2: giver_name (문자열)
-        Cell giverNameCell = row.getCell(2);
-        if (giverNameCell == null) {
-            throw new IllegalArgumentException("보낸 사람 이름은 필수입니다");
+        // 2: name (문자열)
+        Cell nameCell = row.getCell(2);
+        if (nameCell == null) {
+            throw new IllegalArgumentException("이름은 필수입니다");
         }
-        entity.setGiverName(getCellValueAsString(giverNameCell));
+        entity.setName(getCellValueAsString(nameCell));
 
-        // 3: giver_relation (문자열, optional)
+        // 3: relation (문자열, optional)
         Cell relationCell = row.getCell(3);
         if (relationCell != null) {
-            entity.setGiverRelation(getCellValueAsString(relationCell));
+            entity.setRelation(getCellValueAsString(relationCell));
         }
 
         // 4: amount (숫자)

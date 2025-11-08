@@ -22,12 +22,12 @@ public class GiftMoneyRequest {
     @Pattern(regexp = "^(RECEIVED|SENT)$", message = "거래 유형은 RECEIVED 또는 SENT만 가능합니다")
     private String transactionType = "RECEIVED";
 
-    @NotBlank(message = "보낸 사람 이름은 필수입니다")
+    @NotBlank(message = "이름은 필수입니다")
     @Size(max = 100, message = "이름은 100자 이내여야 합니다")
-    private String giverName;
+    private String name;
 
     @Size(max = 50, message = "관계는 50자 이내여야 합니다")
-    private String giverRelation;
+    private String relation;
 
     @NotNull(message = "금액은 필수입니다")
     @Positive(message = "금액은 양수여야 합니다")

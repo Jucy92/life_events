@@ -16,8 +16,8 @@ public class GiftMoneyResponse {
     private LocalDate eventDate;
     private String eventType;
     private String transactionType;
-    private String giverName;
-    private String giverRelation;
+    private String name;
+    private String relation;
     private BigDecimal amount;
     private String contact;
     private String memo;
@@ -30,8 +30,8 @@ public class GiftMoneyResponse {
                 .eventDate(giftMoney.getEventDate())
                 .eventType(giftMoney.getEventType())
                 .transactionType(giftMoney.getTransactionType())
-                .giverName(giftMoney.getGiverName())
-                .giverRelation(giftMoney.getGiverRelation())
+                .name(giftMoney.getName())
+                .relation(giftMoney.getRelation())
                 .amount(giftMoney.getAmount())
                 .contact(giftMoney.getContact())
                 .memo(giftMoney.getMemo())

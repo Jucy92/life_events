@@ -21,15 +21,15 @@ public interface GiftMoneyRepository extends JpaRepository<GiftMoney, Long> {
     @Query("SELECT g FROM GiftMoney g JOIN FETCH g.user WHERE g.user.id = :userId")
     Page<GiftMoney> findByUserId(@Param("userId") Long userId, Pageable pageable);
 
-    @Query("SELECT g FROM GiftMoney g JOIN FETCH g.user WHERE g.user.id = :userId AND g.giverName LIKE %:name%")
-    Page<GiftMoney> findByUserIdAndGiverNameContaining(@Param("userId") Long userId, @Param("name") String name, Pageable pageable);
+    @Query("SELECT g FROM GiftMoney g JOIN FETCH g.user WHERE g.user.id = :userId AND g.name LIKE %:name%")
+    Page<GiftMoney> findByUserIdAndNameContaining(@Param("userId") Long userId, @Param("name") String name, Pageable pageable);
 
     // transactionType 필터링 추가 (JOIN FETCH 포함)
     @Query("SELECT g FROM GiftMoney g JOIN FETCH g.user WHERE g.user.id = :userId AND g.transactionType = :transactionType")
     Page<GiftMoney> findByUserIdAndTransactionType(@Param("userId") Long userId, @Param("transactionType") String transactionType, Pageable pageable);
 
-    @Query("SELECT g FROM GiftMoney g JOIN FETCH g.user WHERE g.user.id = :userId AND g.transactionType = :transactionType AND g.giverName LIKE %:name%")
-    Page<GiftMoney> findByUserIdAndTransactionTypeAndGiverNameContaining(
+    @Query("SELECT g FROM GiftMoney g JOIN FETCH g.user WHERE g.user.id = :userId AND g.transactionType = :transactionType AND g.name LIKE %:name%")
+    Page<GiftMoney> findByUserIdAndTransactionTypeAndNameContaining(
         @Param("userId") Long userId, @Param("transactionType") String transactionType, @Param("name") String name, Pageable pageable);
 
     Optional<GiftMoney> findByIdAndUserId(Long id, Long userId);
@@ -86,8 +86,8 @@ public interface GiftMoneyRepository extends JpaRepository<GiftMoney, Long> {
 
     // 인물별 통계 (Native Query - 서브쿼리 필요)
     @Query(value = "SELECT " +
-           "g.giver_name as giverName, " +
-           "g.giver_relation as relation, " +
+           "g.name as name, " +
+           "g.relation as relation, " +
            "COALESCE(SUM(CASE WHEN g.transaction_type = 'RECEIVED' THEN g.amount ELSE 0 END), 0) as receivedTotal, " +
            "COALESCE(SUM(CASE WHEN g.transaction_type = 'RECEIVED' THEN 1 ELSE 0 END), 0) as receivedCount, " +
            "COALESCE(SUM(CASE WHEN g.transaction_type = 'SENT' THEN g.amount ELSE 0 END), 0) as sentTotal, " +
@@ -96,11 +96,11 @@ public interface GiftMoneyRepository extends JpaRepository<GiftMoney, Long> {
            "COALESCE(SUM(CASE WHEN g.transaction_type = 'SENT' THEN g.amount ELSE 0 END), 0) as balance, " +
            "MAX(g.event_date) as lastEventDate, " +
            "(SELECT g2.event_type FROM gift_money g2 " +
-           " WHERE g2.giver_name = g.giver_name AND g2.user_id = :userId " +
+           " WHERE g2.name = g.name AND g2.user_id = :userId " +
            " ORDER BY g2.event_date DESC LIMIT 1) as lastEventType " +
            "FROM gift_money g " +
            "WHERE g.user_id = :userId " +
-           "GROUP BY g.giver_name, g.giver_relation " +
+           "GROUP BY g.name, g.relation " +
            "ORDER BY (COALESCE(SUM(CASE WHEN g.transaction_type = 'RECEIVED' THEN g.amount ELSE 0 END), 0) - " +
            "         COALESCE(SUM(CASE WHEN g.transaction_type = 'SENT' THEN g.amount ELSE 0 END), 0)) DESC",
            nativeQuery = true)
@@ -144,7 +144,7 @@ public interface GiftMoneyRepository extends JpaRepository<GiftMoney, Long> {
 
     // 관계별 통계
     @Query(value = "SELECT " +
-           "COALESCE(g.giver_relation, '미지정') as relation, " +
+           "COALESCE(g.relation, '미지정') as relation, " +
            "COALESCE(SUM(CASE WHEN g.transaction_type = 'RECEIVED' THEN g.amount ELSE 0 END), 0) as receivedTotal, " +
            "COALESCE(SUM(CASE WHEN g.transaction_type = 'RECEIVED' THEN 1 ELSE 0 END), 0) as receivedCount, " +
            "COALESCE(SUM(CASE WHEN g.transaction_type = 'SENT' THEN g.amount ELSE 0 END), 0) as sentTotal, " +
@@ -157,7 +157,7 @@ public interface GiftMoneyRepository extends JpaRepository<GiftMoney, Long> {
            "      SUM(CASE WHEN g.transaction_type = 'SENT' THEN 1 ELSE 0 END) ELSE 0 END as averageSent " +
            "FROM gift_money g " +
            "WHERE g.user_id = :userId " +
-           "GROUP BY COALESCE(g.giver_relation, '미지정') " +
+           "GROUP BY COALESCE(g.relation, '미지정') " +
            "ORDER BY (COALESCE(SUM(CASE WHEN g.transaction_type = 'RECEIVED' THEN g.amount ELSE 0 END), 0) + " +
            "         COALESCE(SUM(CASE WHEN g.transaction_type = 'SENT' THEN g.amount ELSE 0 END), 0)) DESC",
            nativeQuery = true)

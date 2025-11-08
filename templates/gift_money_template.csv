@@ -1,4 +1,4 @@
-event_date,event_type,giver_name,giver_relation,amount,contact,memo
+event_date,event_type,name,relation,amount,contact,memo
 2025-10-15,결혼식,홍길동,친구,100000,010-1234-5678,대학 동기
 2025-10-20,장례식,김철수,가족,200000,010-9876-5432,삼촌
 2025-11-01,돌잔치,이영희,직장동료,50000,010-5555-1234,같은 팀
