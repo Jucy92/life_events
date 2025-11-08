@@ -39,10 +39,10 @@ public class GiftMoney {
     @Column(nullable = false, length = 10)
     private String transactionType = "RECEIVED";  // RECEIVED(받은 축의금) or SENT(보낸 축의금)
 
-    @Column(nullable = false, length = 100)
+    @Column(name = "name", nullable = false, length = 100)
     private String name;
 
-    @Column(length = 50)
+    @Column(name = "relation", length = 50)
     private String relation;
 
     @Column(nullable = false, precision = 10, scale = 0)
