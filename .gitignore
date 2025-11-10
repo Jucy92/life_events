@@ -64,3 +64,5 @@ browser-state-*.json
 
 ### Render deployment config ###
 render.yamlRENDER_ENV_SETUP.md
+
+# Test auto-deploy after GitHub App reconnection
